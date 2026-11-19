@@ -1,0 +1,6 @@
+target/
+config.properties
+*.log
+.vscode/settings.json
+.idea/
+*.class

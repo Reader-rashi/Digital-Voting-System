@@ -1,0 +1,6 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    { "type": "java", "name": "Digital Voting System", "request": "launch", "mainClass": "com.digitalvoting.App", "cwd": "${workspaceFolder}" }
+  ]
+}
