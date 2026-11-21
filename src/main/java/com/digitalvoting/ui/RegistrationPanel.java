@@ -1,5 +1,26 @@
 package com.digitalvoting.ui;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.image.BufferedImage;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 import com.digitalvoting.config.AppConfig;
 import com.digitalvoting.model.Models.NewVoter;
 import com.digitalvoting.service.OtpService;
@@ -7,14 +28,6 @@ import com.digitalvoting.service.OtpService.Channel;
 import com.digitalvoting.service.RegistrationService;
 import com.digitalvoting.util.ServiceException;
 import com.digitalvoting.util.Validators;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 /** 4-step registration: details+Aadhaar, email/mobile OTP, face enrollment, password+submit. */
 public class RegistrationPanel extends JPanel {
@@ -107,36 +120,94 @@ public class RegistrationPanel extends JPanel {
     }
 
     private JPanel step3() {
-        int min = AppConfig.getInt("face.min_samples", 3);
-        JPanel p = new JPanel(new BorderLayout(0, 12));
-        p.setOpaque(false);
-        CameraPanel cam = new CameraPanel();
-        JLabel count = UI.muted("Samples captured: 0 / " + min + " (slightly turn your head between shots)");
-        JButton next = UI.button("Continue", true, () -> show(4));
-        next.setEnabled(false);
-        JButton capture = UI.button("Capture sample", false, () -> { });
-        capture.addActionListener(e -> {
-            BufferedImage img = cam.snapshot();
-            if (img == null) { UI.error(this, new ServiceException("Camera is not ready yet.")); return; }
-            capture.setEnabled(false);
-            Async.run(() -> {
-                byte[] face = Session.FACE.extractFace(img);
-                if (face == null) throw new ServiceException("Could not find exactly one face. Try again.");
-                return face;
-            }, face -> {
-                capture.setEnabled(true);
-                faces.add(face);
-                count.setText("Samples captured: " + faces.size() + " / " + min);
-                next.setEnabled(faces.size() >= min);
-            }, t -> { capture.setEnabled(true); UI.error(this, t); });
+    int min = AppConfig.getInt("face.min_samples", 6);
+
+    JPanel p = new JPanel(new BorderLayout(0, 12));
+    p.setOpaque(false);
+
+    CameraPanel cam = new CameraPanel();
+
+    JLabel count = UI.muted(
+        "Samples captured: 0 / " + min +
+        " (slightly turn your head between shots)"
+    );
+
+    JButton next = UI.button(
+        "Continue",
+        true,
+        () -> show(4)
+    );
+
+    next.setEnabled(false);
+
+    JButton capture = UI.button(
+        "Capture sample",
+        false,
+        () -> {}
+    );
+
+    capture.addActionListener(e -> {
+
+        if (faces.size() >= min) {
+            UI.info(this, "Required face samples already captured.");
+            return;
+        }
+
+        BufferedImage img = cam.snapshot();
+
+        if (img == null) {
+            UI.error(this,
+                new ServiceException("Camera is not ready yet."));
+            return;
+        }
+
+        capture.setEnabled(false);
+
+        Async.run(() -> {
+
+            byte[] face = Session.FACE.extractFace(img);
+
+            if (face == null) {
+                throw new ServiceException(
+                    "Could not detect exactly one face. Try again."
+                );
+            }
+
+            return face;
+
+        }, face -> {
+
+            faces.add(face);
+
+            count.setText(
+                "Samples captured: " + faces.size() +
+                " / " + min
+            );
+
+            next.setEnabled(faces.size() >= min);
+
+            capture.setEnabled(faces.size() < min);
+
+        }, t -> {
+
+            capture.setEnabled(true);
+            UI.error(this, t);
+
         });
-        JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        south.setOpaque(false);
-        south.add(capture); south.add(next); south.add(count);
-        p.add(cam, BorderLayout.CENTER);
-        p.add(south, BorderLayout.SOUTH);
-        return p;
-    }
+    });
+
+    JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    south.setOpaque(false);
+
+    south.add(capture);
+    south.add(next);
+    south.add(count);
+
+    p.add(cam, BorderLayout.CENTER);
+    p.add(south, BorderLayout.SOUTH);
+
+    return p;
+}
 
     private JPanel step4() {
         UI.Form f = new UI.Form();

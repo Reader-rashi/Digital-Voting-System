@@ -1,16 +1,21 @@
 package com.digitalvoting.ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.List;
+import java.util.function.Supplier;
+
+import javax.swing.JPanel;
+
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.Java2DFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.bytedeco.javacv.VideoInputFrameGrabber;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Live webcam preview. Starts when shown, releases the camera when removed from the window.
@@ -101,7 +106,15 @@ public class CameraPanel extends JPanel {
     }
 
     /** Latest frame (null if the camera has not produced one yet). */
-    public BufferedImage snapshot() { return latest; }
+   public BufferedImage snapshot() {
+    System.out.println(
+        "Camera snapshot: " +
+        (latest == null ? "NULL" :
+        latest.getWidth() + "x" + latest.getHeight())
+    );
+
+    return latest;
+}
 
     @Override protected void paintComponent(Graphics g) {
         super.paintComponent(g);

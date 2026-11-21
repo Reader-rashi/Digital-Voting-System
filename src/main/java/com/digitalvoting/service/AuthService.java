@@ -34,15 +34,44 @@ public class AuthService {
     }
 
     /** Step 3 of voter login: face match against enrolled samples. */
-    public void verifyFace(Voter voter, byte[] probePng) throws ServiceException {
-        try {
-            if (!face.verify(probePng, voters.faceTemplates(voter.id()))) {
-                audit.log("voter:" + voter.id(), "FACE_MISMATCH", null);
-                throw new ServiceException("Face did not match. Try again in good lighting.");
-            }
-            audit.log("voter:" + voter.id(), "LOGIN_OK", null);
-        } catch (SQLException e) { throw new ServiceException("Database error: " + e.getMessage(), e); }
+    
+public void verifyFace(Voter voter, byte[] probePng)
+        throws ServiceException {
+
+    try {
+        var samples = voters.allApprovedFaceTemplates();
+
+        boolean matched = face.verify(
+            voter.id(),
+            probePng,
+            samples
+        );
+
+        if (!matched) {
+            audit.log(
+                "voter:" + voter.id(),
+                "FACE_MISMATCH",
+                null
+            );
+
+            throw new ServiceException(
+                "Face did not match. Try again in good lighting."
+            );
+        }
+
+        audit.log(
+            "voter:" + voter.id(),
+            "LOGIN_OK",
+            null
+        );
+
+    } catch (SQLException e) {
+        throw new ServiceException(
+            "Database error: " + e.getMessage(),
+            e
+        );
     }
+}
 
     public Admin adminLogin(String username, String password) throws ServiceException {
         try {

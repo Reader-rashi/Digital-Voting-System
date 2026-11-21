@@ -1,15 +1,25 @@
 package com.digitalvoting.ui;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
+import java.awt.image.BufferedImage;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+
 import com.digitalvoting.model.Models.Voter;
 import com.digitalvoting.service.AuthService;
 import com.digitalvoting.service.OtpService;
 import com.digitalvoting.service.OtpService.Channel;
 import com.digitalvoting.util.ServiceException;
 import com.digitalvoting.util.Validators;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 /** Voter login: 1) password  2) email/SMS OTP  3) face verification. */
 public class LoginPanel extends JPanel {
@@ -68,29 +78,61 @@ public class LoginPanel extends JPanel {
     }
 
     private JPanel facePhase() {
-        JPanel p = new JPanel(new BorderLayout(0, 12));
-        p.setOpaque(false);
-        CameraPanel cam = new CameraPanel();
-        JLabel msg = UI.muted("Step 3 of 3 - look at the camera, one face only, good lighting.");
-        JButton go = UI.button("Verify face and continue", true, () -> { });
-        go.addActionListener(e -> {
-            BufferedImage img = cam.snapshot();
-            if (img == null) { UI.error(this, new ServiceException("Camera is not ready yet.")); return; }
-            go.setEnabled(false);
-            Async.run(() -> {
-                byte[] face = Session.FACE.extractFace(img);
-                if (face == null) throw new ServiceException("Could not find exactly one face. Try again.");
-                auth.verifyFace(voter, face);
-                return true;
-            }, ok -> { Session.voter = voter; nav.go(Navigator.BALLOT); },
-               t -> { go.setEnabled(true); UI.error(this, t); });
+    JPanel p = new JPanel(new BorderLayout(0, 12));
+    p.setOpaque(false);
+
+    CameraPanel cam = new CameraPanel();
+
+    JLabel msg = UI.muted(
+        "Step 3 of 3 - look at the camera, one face only, good lighting."
+    );
+
+    JButton go = new JButton("Verify face and continue");
+
+    go.addActionListener(e -> {
+        BufferedImage img = cam.snapshot();
+
+        if (img == null) {
+            UI.error(this, new ServiceException("Camera is not ready yet."));
+            return;
+        }
+
+        go.setEnabled(false);
+
+        Async.run(() -> {
+            byte[] face = Session.FACE.extractFace(img);
+
+            if (face == null) {
+                throw new ServiceException(
+                    "Could not find exactly one face. Try again."
+                );
+            }
+
+            auth.verifyFace(voter, face);
+            return true;
+
+        }, ok -> {
+            go.setEnabled(true);
+            Session.voter = voter;
+            nav.go(Navigator.BALLOT);
+
+        }, t -> {
+            go.setEnabled(true);
+            UI.error(this, t);
         });
-        p.add(msg, BorderLayout.NORTH);
-        p.add(cam, BorderLayout.CENTER);
-        JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT)); south.setOpaque(false); south.add(go);
-        p.add(south, BorderLayout.SOUTH);
-        return p;
-    }
+    });
+
+    p.add(msg, BorderLayout.NORTH);
+    p.add(cam, BorderLayout.CENTER);
+
+    JPanel south = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    south.setOpaque(false);
+    south.add(go);
+
+    p.add(south, BorderLayout.SOUTH);
+
+    return p;
+}
 
     private static JPanel wrap(JComponent c) {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
