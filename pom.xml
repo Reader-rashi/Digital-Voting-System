@@ -27,6 +27,13 @@
       <version>8.4.0</version>
     </dependency>
 
+<dependency>
+    <groupId>org.jfree</groupId>
+    <artifactId>jfreechart</artifactId>
+    <version>1.5.5</version>
+</dependency>
+
+
     <!-- Email OTP (JavaMail / Jakarta Mail) -->
     <dependency>
       <groupId>com.sun.mail</groupId>

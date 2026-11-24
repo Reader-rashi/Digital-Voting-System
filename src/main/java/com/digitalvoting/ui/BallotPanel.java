@@ -1,11 +1,23 @@
 package com.digitalvoting.ui;
 
-import com.digitalvoting.model.Models.*;
-import com.digitalvoting.service.VotingService;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+
+import com.digitalvoting.model.Models.*;
+import com.digitalvoting.model.Models.Candidate;
+import com.digitalvoting.model.Models.Election;
+import com.digitalvoting.service.VotingService;
 
 public class BallotPanel extends JPanel {
     private final VotingService voting = new VotingService();

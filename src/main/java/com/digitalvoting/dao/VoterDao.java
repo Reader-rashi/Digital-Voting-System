@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import com.digitalvoting.db.Database;
 import com.digitalvoting.model.FaceSample;
-import com.digitalvoting.model.Models.*;
 import com.digitalvoting.model.Models.NewVoter;
 import com.digitalvoting.model.Models.Voter;
 import com.digitalvoting.model.Models.VoterAuth;

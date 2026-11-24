@@ -1,18 +1,42 @@
 package com.digitalvoting.ui;
 
-import com.digitalvoting.dao.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import com.digitalvoting.dao.AdminDao;
+import com.digitalvoting.dao.AuditDao;
+import com.digitalvoting.dao.ElectionDao;
+import com.digitalvoting.dao.VoterDao;
 import com.digitalvoting.model.Models.*;
+import com.digitalvoting.model.Models.Admin;
+import com.digitalvoting.model.Models.Candidate;
+import com.digitalvoting.model.Models.Election;
+import com.digitalvoting.model.Models.Party;
+import com.digitalvoting.model.Models.ResultRow;
+import com.digitalvoting.model.Models.Turnout;
+import com.digitalvoting.model.Models.Voter;
 import com.digitalvoting.model.Role;
 import com.digitalvoting.model.Role.Permission;
 import com.digitalvoting.util.Security;
 import com.digitalvoting.util.ServiceException;
-
-import javax.swing.*;
-import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.List;
 
 /** Admin console. Each tab is shown only if the signed-in role has the permission. */
 public class AdminDashboardPanel extends JPanel {

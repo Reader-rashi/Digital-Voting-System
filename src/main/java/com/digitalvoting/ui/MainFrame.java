@@ -1,10 +1,18 @@
 package com.digitalvoting.ui;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /** Window with a header bar and one screen at a time. Screens are rebuilt on every visit so state resets. */
 public class MainFrame extends JFrame implements Navigator {

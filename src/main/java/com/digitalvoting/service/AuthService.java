@@ -1,11 +1,18 @@
 package com.digitalvoting.service;
 
-import com.digitalvoting.api.FaceService;
-import com.digitalvoting.dao.*;
-import com.digitalvoting.model.Models.*;
-import com.digitalvoting.util.*;
-
 import java.sql.SQLException;
+
+import com.digitalvoting.api.FaceService;
+import com.digitalvoting.dao.AdminDao;
+import com.digitalvoting.dao.AuditDao;
+import com.digitalvoting.dao.VoterDao;
+import com.digitalvoting.model.Models.*;
+import com.digitalvoting.model.Models.Admin;
+import com.digitalvoting.model.Models.AdminAuth;
+import com.digitalvoting.model.Models.Voter;
+import com.digitalvoting.model.Models.VoterAuth;
+import com.digitalvoting.util.Security;
+import com.digitalvoting.util.ServiceException;
 
 public class AuthService {
     public static final String PURPOSE_LOGIN = "LOGIN";

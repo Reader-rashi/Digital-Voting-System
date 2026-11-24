@@ -1,4 +1,3 @@
-
 package com.digitalvoting.api;
 
 import java.awt.image.BufferedImage;
@@ -300,7 +299,7 @@ public class FaceService {
         double score = confidence.get();
 
         double threshold =
-                AppConfig.getDouble("face.threshold", 65.0);
+                AppConfig.getDouble("face.threshold", 120.0);
 
         System.out.println("Expected voter ID: " + expectedVoterId);
         System.out.println("Predicted voter ID: " + predictedVoterId);
@@ -311,6 +310,13 @@ public class FaceService {
 
         if (!Double.isFinite(score) || score < 0) {
             return false;
+        }
+
+        if (predictedVoterId != expectedVoterId) {
+            System.out.println("Face rejected: closest match is a different voter.");
+        } else if (score > threshold) {
+            System.out.println("Face rejected: right voter, but distance " + score
+                    + " is above threshold " + threshold + " (raise face.threshold).");
         }
 
         return predictedVoterId == expectedVoterId
